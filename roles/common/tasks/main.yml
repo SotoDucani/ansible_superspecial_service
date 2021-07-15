@@ -1,0 +1,3 @@
+---
+- name: Install PS RSAT Feature
+  import_tasks: win_install_feature_ps_rsat.yml

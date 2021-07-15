@@ -1,0 +1,9 @@
+---
+- name: Install the superspecial service
+  import_tasks: service_install_win_services.yml
+
+- name: Start the superspecialservice
+  import_tasks: service_start_win_service.yml
+
+- name: Set runas for the superspecialservice
+  import_tasks: service_set_runas_user.yml

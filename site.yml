@@ -1,0 +1,10 @@
+---
+- name: Apply Common configuration
+  hosts: all
+  roles:
+    - common
+
+- name: Apply servicehost configuration
+  hosts: servicehosts
+  roles:
+    - servicehost

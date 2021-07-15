@@ -1,0 +1,10 @@
+---
+- name: Get existing superspecialservice installation info
+  hosts: servicehosts
+  gather_facts: false
+
+  tasks:
+  - name: Get information from registry
+    ansible.windows.win_reg_stat:
+      path: 'HKLM:\SOFTWARE\COMPANYNAME\SuperSpecialService Instances\{{ servicename }}'
+    register: existingserviceinstall

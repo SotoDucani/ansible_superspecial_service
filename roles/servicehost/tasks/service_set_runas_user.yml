@@ -1,0 +1,25 @@
+---
+- name: Set runas account for superspecial service
+  hosts: servicehosts
+
+  tasks:
+  - name: Set "Log on as a service" rights
+    ansible.windows.win_user_right:
+      name: SeServiceLogonRight
+      action: add
+      users: '{{ serviceaccountusername }}'
+
+  - name: Check existing service configuration
+    ansible.windows.win_service_info:
+      name: '{{ servicename }}'
+    register: existingservice
+
+  - name: Set service runas acccount
+    ansible.windows.win_service:
+      name: '{{ servicename }}'
+      start_mode: auto
+      state: restarted
+      update_password: always
+      username: '{{ ansible_hostname }}\{{ serviceaccountusername }}'
+      password: '{{ serviceaccountpassword }}'
+    when: serviceaccountusername not in existingservice.services[0].username
