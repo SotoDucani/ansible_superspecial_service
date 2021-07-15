@@ -1,5 +1,8 @@
 ---
-- name: Starting
+# Using 'changed_when' is enough to make this 'act' idempotent when reporting if it changed something or not
+# This is dangerous when using 3rd party exe files, as who knows what they're actually doing
+# Ends up being good enough for this purpose, but don't just do this without verifying actual behavior of the exe
+- name: Starting service
   ansible.windows.win_shell: '{{ serviceinstalldir }}\superspecialservice.exe -s'
   register: startresult
-  changed_when: ("started successfully on port 8080" in result.stdout)
+  changed_when: ("started successfully on port 8080" in startresult.stdout)

@@ -1,12 +1,16 @@
 ---
 - name: Check for existing superspecial service install
-  import_playbook: service_get_installed_service_info.yml
+  import_playbook: service_get_installed_service_info.yml # this gives us the 'existingserviceinstall' variable
 
+# Idempotent command to just ensure a directory exists. Nice and simple
 - name: Create Install Directory
   ansible.windows.win_file:
     path: '{{ serviceinstalldir }}'
     state: directory
 
+# Normally 'win_get_url' is idempotent, however we're immediately unziping it below with 'delete_archive: yes' which deletes the original zip
+# That in turn makes this something that will ALWAYS download the zip again
+# We use 'when:' to not download this needlessly when we detect an existing install
 - name: Download the Zip
   ansible.windows.win_get_url:
     url: '{{ servicedownloadurl }}'
@@ -14,6 +18,8 @@
     force: yes
   when: existingserviceinstall.exists is false
 
+# win_unzip is called out as specifically NOT idempotent, so it's important that we check it somehow
+# 'when:' only allows this to unzip when an existing install is not already detected
 - name: Unpack the Zip
   community.windows.win_unzip:
     src: '{{ serviceinstalldir }}\latest_service_version.zip'
@@ -21,8 +27,11 @@
     delete_archive: yes
   when: existingserviceinstall.exists is false
 
+# Directly calling 'shell' commands is not idempotent unless we make them so using 'changed_when:' and other options
+# We also use 'when:' to avoid running this when there is an existing install
+# Technically best practice would to also set 'failed_when:' and search for other strings our exe may return, but who has time for that
 - name: Install the superspecial service
   ansible.windows.win_shell: '{{ serviceinstalldir }}\superspecialservice.exe -i -p 8080 -n {{ servicename }}'
-  register: installresult
-  changed_when: ("installed successfully on port 8080" in result.stdout)
+  register: installresult # you must register into a results variable to use it even in the same step
+  changed_when: ("installed successfully on port 8080" in installresult.stdout)
   when: existingserviceinstall.exists is false

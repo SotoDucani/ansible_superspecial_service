@@ -5,11 +5,14 @@
     action: add
     users: '{{ serviceaccountusername }}'
 
+# Pulls windows service information and registers a variable; We technically check it in the next step
 - name: Check existing service configuration
   ansible.windows.win_service_info:
     name: '{{ servicename }}'
   register: existingservice
 
+# 'win_service' is capable of being idempotent, but not with the properties we're setting below
+# Uses 'when:' to only run this when the account is not already set as the 'runas' account
 - name: Set service runas acccount
   ansible.windows.win_service:
     name: '{{ servicename }}'

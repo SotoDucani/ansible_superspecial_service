@@ -3,7 +3,7 @@ serviceinstalldir: 'D:\SuperSpecialService'
 servicedownloadurl: 'https://notarealurl.local/superspecialservice_latest.zip'
 servicename: 'SuperSpecialServiceInstance1'
 serviceaccountusername: 'superspecialserviceacct'
-# This isn't a real password, don't waste your time
+# This isn't a real password, don't waste your time trying to hack me :D
 serviceaccountpassword: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           61626264386635373639306334666361656566363439346466656537653636313039393266313635

@@ -2,4 +2,4 @@
 - name: Get information from registry
   ansible.windows.win_reg_stat:
     path: 'HKLM:\SOFTWARE\COMPANYNAME\SuperSpecialService Instances\{{ servicename }}'
-  register: existingserviceinstall
+  register: existingserviceinstall # This register makes the 'existingserviceinstall' variable available in other playbooks that use this one
