@@ -1,17 +1,12 @@
 ---
-- name: Install Windows Feature - PS RSAT
-  hosts: windows
-  gather_facts: false
+- name: Install the PS RSAT feature
+  ansible.windows.win_feature:
+    name: RSAT-AD-PowerShell
+    state: present
+    include_sub_features: yes
+    include_management_tools: yes
+  register: win_feature
 
-  tasks:
-  - name: Install the PS RSAT feature
-    ansible.windows.win_feature:
-      name: RSAT-AD-PowerShell
-      state: present
-      include_sub_features: yes
-      include_management_tools: yes
-    register: win_feature
-
-  - name: Reboot if needed from feature installation
-    ansible.windows.win_reboot:
-    when: win_feature.reboot_required
+- name: Reboot if needed from feature installation
+  ansible.windows.win_reboot:
+  when: win_feature.reboot_required

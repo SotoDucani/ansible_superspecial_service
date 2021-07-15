@@ -1,10 +1,15 @@
 ---
-- name: Apply Common configuration
-  hosts: all
-  roles:
-    - common
+- name: Configure the site
+  hosts: windows
+  gather_facts: true
 
-- name: Apply servicehost configuration
-  hosts: servicehosts
-  roles:
-    - servicehost
+  tasks:
+  - name: Apply Common configuration
+    hosts: all
+    roles:
+      - common
+
+  - name: Apply servicehost configuration
+    hosts: servicehosts
+    roles:
+      - servicehost

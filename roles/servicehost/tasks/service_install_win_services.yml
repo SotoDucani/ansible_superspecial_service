@@ -2,32 +2,27 @@
 - name: Check for existing superspecial service install
   import_playbook: service_get_installed_service_info.yml
 
+- name: Create Install Directory
+  ansible.windows.win_file:
+    path: '{{ serviceinstalldir }}'
+    state: directory
+
+- name: Download the Zip
+  ansible.windows.win_get_url:
+    url: '{{ servicedownloadurl }}'
+    dest: '{{ serviceinstalldir }}\latest_service_version.zip'
+    force: yes
+  when: existingserviceinstall.exists is false
+
+- name: Unpack the Zip
+  community.windows.win_unzip:
+    src: '{{ serviceinstalldir }}\latest_service_version.zip'
+    dest: '{{ serviceinstalldir }}'
+    delete_archive: yes
+  when: existingserviceinstall.exists is false
+
 - name: Install the superspecial service
-  hosts: servicehosts
-  gather_facts: false
-
-  tasks:
-  - name: Create Install Directory
-    ansible.windows.win_file:
-      path: '{{ serviceinstalldir }}'
-      state: directory
-
-  - name: Download the Zip
-    ansible.windows.win_get_url:
-      url: '{{ servicedownloadurl }}'
-      dest: '{{ serviceinstalldir }}\latest_service_version.zip'
-      force: yes
-    when: existingserviceinstall.exists is false
-
-  - name: Unpack the Zip
-    community.windows.win_unzip:
-      src: '{{ serviceinstalldir }}\latest_service_version.zip'
-      dest: '{{ serviceinstalldir }}'
-      delete_archive: yes
-    when: existingserviceinstall.exists is false
-
-  - name: Install the superspecial service
-    ansible.windows.win_shell: '{{ serviceinstalldir }}\superspecialservice.exe -i -p 8080 -n {{ servicename }}'
-    register: installresult
-    changed_when: ("installed successfully on port 8080" in result.stdout)
-    when: existingserviceinstall.exists is false
+  ansible.windows.win_shell: '{{ serviceinstalldir }}\superspecialservice.exe -i -p 8080 -n {{ servicename }}'
+  register: installresult
+  changed_when: ("installed successfully on port 8080" in result.stdout)
+  when: existingserviceinstall.exists is false

@@ -1,10 +1,5 @@
 ---
-- name: Start the superspecialservice
-  hosts: servicehosts
-  gather_facts: false
-
-  tasks:
-  - name: Starting
+- name: Starting
   ansible.windows.win_shell: '{{ serviceinstalldir }}\superspecialservice.exe -s'
   register: startresult
   changed_when: ("started successfully on port 8080" in result.stdout)
